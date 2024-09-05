@@ -1,12 +1,8 @@
-import streamlit as st
-import pandas as pd
-import random
-import time
-import utils
-import streamlit.components.v1 as components
 import re
+import time
 
-
+import pandas as pd
+import streamlit as st
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 from transformers import pipeline
 
@@ -18,7 +14,6 @@ industry_lookup = pd.read_excel("D:\Industries.xlsx", "Sheet1")
 def check_value_in_lookup(value):
     freq = len(industry_lookup[industry_lookup["Ingustry_classification"].str.lower() == value.lower()])
     return freq > 0
-
 
 
 def detect_country_name(answer):
@@ -33,9 +28,9 @@ def detect_country_name(answer):
 # Streamed response emulator
 questionsDic = {
     1: "Welcome to Skilled! I'm ALI, your digital sales colleague. I'm here to make your sales journey smoother. Would you like to hear more about what I can do or just dive right in with the onboarding process?",
-    2:"Could you please specify the job title of the customer you are targeting? For example, are you focusing on roles such as Chief Executive Officer (CEO), Marketing Manager, or IT Director? This will help me tailor our approach to the appropriate decision-makers or influencers in their role.",
-    3:"To further refine your target customer, could you specify the job seniority level you're aiming for? Please provide one or a range of seniority levels, such as entry-level, mid-level, senior, or executive.",
-    4:"Cool! could you identify the department or departments you want to target? Please provide one or a list of departments relevant to your ideal customer profiles.",
+    2: "Could you please specify the job title of the customer you are targeting? For example, are you focusing on roles such as Chief Executive Officer (CEO), Marketing Manager, or IT Director? This will help me tailor our approach to the appropriate decision-makers or influencers in their role.",
+    3: "To further refine your target customer, could you specify the job seniority level you're aiming for? Please provide one or a range of seniority levels, such as entry-level, mid-level, senior, or executive.",
+    4: "Cool! could you identify the department or departments you want to target? Please provide one or a list of departments relevant to your ideal customer profiles.",
     5: "To help me better understand your target market, could you please specify the country where your ideal companies are located? For example, the United States, UAE, or Saudi Arabia.",
     6: "Could you also provide the city or cities within that country where you'd like to focus your outreach efforts? For instance, New York City, Dubai, or Riyadh.",
     7: "Which industry or industries are you interested in targeting? Examples might include technology, healthcare, finance, or manufacturing.",
@@ -51,19 +46,19 @@ def handle_usesr_responese(question_index, answer):
     print(f"answers: {answerDict}, question index: {question_index}")
     if question_index == 2:
         # this question for detect Customer job title
-        #ustomer_job_title = detect_customer_job(answer)
+        # ustomer_job_title = detect_customer_job(answer)
         answerDict["customer_job_title"] = answer
         return True
     if question_index == 3:
         # this question for detect Job Seniority
         print(f" handle_usesr_responese", question_index)
-        #country_name = detect_country_name(answer)
+        # country_name = detect_country_name(answer)
         answerDict["job_seniority"] = answer
         return True
     elif question_index == 4:
         # this question for detect Department
         print(f" handle_usesr_responese", question_index)
-        #country_name = detect_country_name(answer)
+        # country_name = detect_country_name(answer)
         answerDict["department"] = answer
         return True
     elif question_index == 5:
@@ -73,12 +68,12 @@ def handle_usesr_responese(question_index, answer):
         answerDict["country"] = country_name[0]["word"]
         return True
     elif question_index == 6:
-        #detect city
+        # detect city
         city_name = detect_country_name(answer)
         answerDict["city"] = city_name[0]["word"]
         return True
     elif question_index == 7:
-        #detect industry
+        # detect industry
         exist = check_value_in_lookup(answer)
         if exist:
             answerDict["industry"] = answer
@@ -86,16 +81,16 @@ def handle_usesr_responese(question_index, answer):
         else:
             return False
     elif question_index == 8:
-        #detect activities
+        # detect activities
         answerDict["company_activities"] = answer
         return True
     elif question_index == 9:
-        #detect company size
-        company_size=detect_company_size(answer)
+        # detect company size
+        company_size = detect_company_size(answer)
         answerDict["company_employee_size"] = company_size[0]
         return True
     elif question_index == 10:
-        #detect company revenue
+        # detect company revenue
         answerDict["company_revenue"] = answer
         return True
     else:
@@ -113,6 +108,7 @@ def detect_company_size(answer):
     x = re.findall("[0-9]*-[0-9]*", answer)
     print(f"in company size function :{x}")
     return x
+
 
 def response_generator(question_index):
     question = questionsDic[question_index]

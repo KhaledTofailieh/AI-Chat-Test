@@ -5,10 +5,14 @@ nlp = spacy.load("en_core_web_sm")
 
 # Define questions
 questions = [
-    {"field": None, "question": "Welcome to Skilled! I'm ALI, your digital sales colleague. I'm here to make your sales journey smoother. Would you like to hear more about what I can do or just dive right in with the onboarding process?"},
-    {"field": "Customer job title", "question": "Could you please specify the job title of the customer you are targeting? For example, are you focusing on roles such as Chief Executive Officer (CEO), Marketing Manager, or IT Director? This will help me tailor our approach to the appropriate decision-makers or influencers in their role."},
-    {"field": "Job Seniority", "question": "To further refine your target customer, could you specify the job seniority level you're aiming for? Please provide one or a range of seniority levels, such as entry-level, mid-level, senior, or executive."},
-    {"field": "Department", "question": "Cool! Could you identify the department or departments you want to target? Please provide one or a list of departments relevant to your ideal customer profiles."}
+    {"field": None,
+     "question": "Welcome to Skilled! I'm ALI, your digital sales colleague. I'm here to make your sales journey smoother. Would you like to hear more about what I can do or just dive right in with the onboarding process?"},
+    {"field": "Customer job title",
+     "question": "Could you please specify the job title of the customer you are targeting? For example, are you focusing on roles such as Chief Executive Officer (CEO), Marketing Manager, or IT Director? This will help me tailor our approach to the appropriate decision-makers or influencers in their role."},
+    {"field": "Job Seniority",
+     "question": "To further refine your target customer, could you specify the job seniority level you're aiming for? Please provide one or a range of seniority levels, such as entry-level, mid-level, senior, or executive."},
+    {"field": "Department",
+     "question": "Cool! Could you identify the department or departments you want to target? Please provide one or a list of departments relevant to your ideal customer profiles."}
 ]
 
 # Dictionary to store the detected values as lists
@@ -18,7 +22,8 @@ user_info = {
     "Department": []
 }
 
-def aggressive_detection(text, field):
+
+def aggressive_detection(field, text):
     """
     Perform aggressive detection of fields, allowing broad matching.
     This approach may increase false positives.
@@ -31,11 +36,11 @@ def aggressive_detection(text, field):
         # Capture all noun phrases and entities that might represent a job title
         for chunk in doc.noun_chunks:
             possibilities.append(chunk.text)
-        
+
         for ent in doc.ents:
             if ent.label_ in ["PERSON", "ORG", "TITLE", "PRODUCT", "WORK_OF_ART", "GPE", "LOC", "NORP"]:
                 possibilities.append(ent.text)
-        
+
         # Capture verbs that might be followed by roles
         for token in doc:
             if token.pos_ == "VERB" and token.dep_ == "ROOT":
@@ -52,7 +57,7 @@ def aggressive_detection(text, field):
         # Capture broader entity types and noun phrases that could indicate departments
         for chunk in doc.noun_chunks:
             possibilities.append(chunk.text)
-        
+
         for ent in doc.ents:
             if ent.label_ in ["ORG", "GPE", "LOC", "NORP", "FAC"]:
                 possibilities.append(ent.text)
@@ -63,6 +68,7 @@ def aggressive_detection(text, field):
 
     return possibilities if possibilities else None
 
+
 def ask_question(question_data):
     """
     Asks the user a question and stores all possible values in a list for the specified field.
@@ -70,7 +76,7 @@ def ask_question(question_data):
     """
     while True:
         user_input = input(question_data["question"] + "\n")
-        
+
         # Skip detection if no field is defined (e.g., for greeting)
         if question_data["field"] is None:
             break  # Move to the next question after the greeting
@@ -84,11 +90,12 @@ def ask_question(question_data):
         else:
             print(f"Sorry, I couldn't detect the {question_data['field']}. Please try again, or clarify your input.\n")
 
-# Start the interaction
-for question_data in questions:
-    ask_question(question_data)
 
-# Show the collected information (multiple values stored for each field)
-print("Here's the collected information:")
-for key, values in user_info.items():
-    print(f"{key}: {values}")
+# # Start the interaction
+# for question_data in questions:
+#     ask_question(question_data)
+#
+# # Show the collected information (multiple values stored for each field)
+# print("Here's the collected information:")
+# for key, values in user_info.items():
+#     print(f"{key}: {values}")
